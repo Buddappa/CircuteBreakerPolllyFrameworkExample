@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolyyFrameworkExample", "PolyyFrameworkExample\PolyyFrameworkExample.csproj", "{E12DB771-AB8B-4AA0-9735-99DFA3D67507}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PollyFrameworkExample", "PolyyFrameworkExample\PollyFrameworkExample.csproj", "{E12DB771-AB8B-4AA0-9735-99DFA3D67507}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
