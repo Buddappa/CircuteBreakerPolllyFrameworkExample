@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Polly;
+using Polly.Extensions.Http;
 
 namespace PolyyFrameworkExample
 {
@@ -28,7 +30,10 @@ namespace PolyyFrameworkExample
         {
             services.AddControllers();
             services.AddHttpClient("ErrorApi", c => { c.BaseAddress = new Uri("https://localhost:44395"); })
-                .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(2, TimeSpan.FromMinutes(2))
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+        // important step  
+        .AddPolicyHandler(GetRetryPolicy())
+                .AddTransientHttpErrorPolicy(p => p.CircuitBreakerAsync(3, TimeSpan.FromMinutes(2))
                 ); ;
 
         }
@@ -51,6 +56,18 @@ namespace PolyyFrameworkExample
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                // HttpRequestException, 5XX and 408  
+                .HandleTransientHttpError()
+                // 404  
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                // Retry two times after delay  
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                ;
         }
     }
 }
